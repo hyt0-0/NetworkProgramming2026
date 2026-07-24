@@ -1,10 +1,11 @@
 using System.Net.Sockets;
 using System.Text;
+using System.Xml.Linq;
 
 namespace Common
 {
     /// <summary>
-    /// ãƒãƒƒãƒˆãƒ¯ãƒ¼ã‚¯é€šä¿¡ã®ãƒ—ãƒ­ãƒˆã‚³ãƒ«ãƒãƒ³ãƒ‰ãƒªãƒ³ã‚°ã‚’è¡Œã†ã‚¯ãƒ©ã‚¹
+    /// ƒlƒbƒgƒ[ƒN’ÊM‚ÌƒvƒƒgƒRƒ‹ƒnƒ“ƒhƒŠƒ“ƒO‚ğs‚¤ƒNƒ‰ƒX
     /// </summary>
     public class ProtocolHandler
     {
@@ -12,7 +13,7 @@ namespace Common
         private const string EndOfFile = "<EOF>";
 
         /// <summary>
-        /// ãƒ‡ãƒ¼ã‚¿å—ä¿¡çµæœ
+        /// ƒf[ƒ^óMŒ‹‰Ê
         /// </summary>
         public class ReceiveResult
         {
@@ -23,22 +24,22 @@ namespace Common
         }
 
         /// <summary>
-        /// å—ä¿¡ã‚¨ãƒ©ãƒ¼ã®ç¨®é¡
+        /// óMƒGƒ‰[‚Ìí—Ş
         /// </summary>
         public enum ReceiveErrorType
         {
             None,
-            DataTooLarge,           // 1024ãƒã‚¤ãƒˆã‚’è¶…ãˆã‚‹ãƒ‡ãƒ¼ã‚¿
-            MissingEOF,             // EOFãŒç„¡ã„
-            ConnectionClosed,       // ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚‰ã‚ŒãŸ
-            DataCorruption          // ãƒ‡ãƒ¼ã‚¿ã®ç•°å¸¸
+            DataTooLarge,           // 1024ƒoƒCƒg‚ğ’´‚¦‚éƒf[ƒ^
+            MissingEOF,             // EOF‚ª–³‚¢
+            ConnectionClosed,       // ƒZƒbƒVƒ‡ƒ“‚ğØ‚ç‚ê‚½
+            DataCorruption          // ƒf[ƒ^‚ÌˆÙí
         }
 
         /// <summary>
-        /// ã‚½ã‚±ãƒƒãƒˆã‹ã‚‰ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡ã—ã€ãƒ—ãƒ­ãƒˆã‚³ãƒ«ã«åŸºã¥ã„ã¦æ¤œè¨¼ã‚’è¡Œã†
+        /// ƒ\ƒPƒbƒg‚©‚çƒf[ƒ^‚ğóM‚µAƒvƒƒgƒRƒ‹‚ÉŠî‚Ã‚¢‚ÄŒŸØ‚ğs‚¤
         /// </summary>
-        /// <param name="socket">å—ä¿¡ã™ã‚‹ã‚½ã‚±ãƒƒãƒˆ</param>
-        /// <returns>å—ä¿¡çµæœ</returns>
+        /// <param name="socket">óM‚·‚éƒ\ƒPƒbƒg</param>
+        /// <returns>óMŒ‹‰Ê</returns>
         public static ReceiveResult ReceiveData(Socket socket)
         {
             var result = new ReceiveResult { Success = false };
@@ -47,42 +48,42 @@ namespace Common
 
             try
             {
-                // ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡
+                // ƒf[ƒ^‚ğóM
                 int bytesReceived = socket.Receive(buffer);
 
-                // ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚‰ã‚ŒãŸå ´åˆ
+                // ƒZƒbƒVƒ‡ƒ“‚ğØ‚ç‚ê‚½ê‡
                 if (bytesReceived == 0)
                 {
                     result.ErrorType = ReceiveErrorType.ConnectionClosed;
-                    result.ErrorMessage = "æ¥ç¶šãŒåˆ‡æ–­ã•ã‚Œã¾ã—ãŸã€‚";
+                    result.ErrorMessage = "Ú‘±‚ªØ’f‚³‚ê‚Ü‚µ‚½B";
                     return result;
                 }
 
                 totalBytesReceived = bytesReceived;
 
-                // 1024ãƒã‚¤ãƒˆã‚’è¶…ãˆã¦ã„ã‚‹ã‹ãƒã‚§ãƒƒã‚¯
+                // 1024ƒoƒCƒg‚ğ’´‚¦‚Ä‚¢‚é‚©ƒ`ƒFƒbƒN
                 if (totalBytesReceived > MaxBufferSize)
                 {
                     result.ErrorType = ReceiveErrorType.DataTooLarge;
-                    result.ErrorMessage = $"ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãŒåˆ¶é™({MaxBufferSize}ãƒã‚¤ãƒˆ)ã‚’è¶…ãˆã¦ã„ã¾ã™ã€‚";
+                    result.ErrorMessage = $"ƒf[ƒ^ƒTƒCƒY‚ª§ŒÀ({MaxBufferSize}ƒoƒCƒg)‚ğ’´‚¦‚Ä‚¢‚Ü‚·B";
                     return result;
                 }
 
-                // å—ä¿¡ãƒ‡ãƒ¼ã‚¿ã‚’æ–‡å­—åˆ—ã«å¤‰æ›
+                // óMƒf[ƒ^‚ğ•¶š—ñ‚É•ÏŠ·
                 string receivedData = Encoding.UTF8.GetString(buffer, 0, totalBytesReceived);
 
-                // <EOF>ã®ä½ç½®ã‚’ç¢ºèª
+                // <EOF>‚ÌˆÊ’u‚ğŠm”F
                 int eofIndex = receivedData.IndexOf(EndOfFile);
 
-                // <EOF>ãŒç„¡ã„å ´åˆ
+                // <EOF>‚ª–³‚¢ê‡
                 if (eofIndex == -1)
                 {
                     result.ErrorType = ReceiveErrorType.MissingEOF;
-                    result.ErrorMessage = "ãƒ‡ãƒ¼ã‚¿çµ‚ç«¯ãƒãƒ¼ã‚«ãƒ¼<EOF>ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“ã€‚";
+                    result.ErrorMessage = "ƒf[ƒ^I’[ƒ}[ƒJ[<EOF>‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñB";
                     return result;
                 }
 
-                // <EOF>ã‚ˆã‚Šå‰ã®ãƒ‡ãƒ¼ã‚¿ã‚’å–å¾—(<EOF>ã®å¾Œã‚ã¯ç„¡è¦–)
+                // <EOF>‚æ‚è‘O‚Ìƒf[ƒ^‚ğæ“¾(<EOF>‚ÌŒã‚ë‚Í–³‹)
                 result.Data = receivedData.Substring(0, eofIndex);
                 result.Success = true;
                 result.ErrorType = ReceiveErrorType.None;
@@ -92,34 +93,35 @@ namespace Common
             catch (SocketException ex)
             {
                 result.ErrorType = ReceiveErrorType.ConnectionClosed;
-                result.ErrorMessage = $"ã‚½ã‚±ãƒƒãƒˆã‚¨ãƒ©ãƒ¼: {ex.Message}";
+                result.ErrorMessage = $"ƒ\ƒPƒbƒgƒGƒ‰[: {ex.Message}";
                 return result;
             }
             catch (Exception ex)
             {
                 result.ErrorType = ReceiveErrorType.DataCorruption;
-                result.ErrorMessage = $"ãƒ‡ãƒ¼ã‚¿ç•°å¸¸: {ex.Message}";
+                result.ErrorMessage = $"ƒf[ƒ^ˆÙí: {ex.Message}";
                 return result;
             }
         }
 
         /// <summary>
-        /// ãƒ‡ãƒ¼ã‚¿ã‚’é€ä¿¡ã™ã‚‹(è‡ªå‹•çš„ã«<EOF>ã‚’ä»˜åŠ )
+        /// ƒf[ƒ^‚ğ‘—M‚·‚é(©“®“I‚É<EOF>‚ğ•t‰Á)
         /// </summary>
-        /// <param name="socket">é€ä¿¡ã™ã‚‹ã‚½ã‚±ãƒƒãƒˆ</param>
-        /// <param name="data">é€ä¿¡ã™ã‚‹ãƒ‡ãƒ¼ã‚¿</param>
-        /// <returns>é€ä¿¡æˆåŠŸã®å¯å¦</returns>
-        public static bool SendData(Socket socket, string data)
+        /// <param name="socket">‘—M‚·‚éƒ\ƒPƒbƒg</param>
+        /// <param name="data">‘—M‚·‚éƒf[ƒ^</param>
+        /// <returns>‘—M¬Œ÷‚Ì‰Â”Û</returns>
+        public static bool SendData(Socket socket, string data, string name)
         {
             try
             {
-                string dataWithEof = data + EndOfFile;
+                string combinedData = string.IsNullOrEmpty(name) ? data : $"{name},{data}";
+                string dataWithEof = combinedData + "<EOF>";
                 byte[] bytes = Encoding.UTF8.GetBytes(dataWithEof);
 
-                // ãƒ‡ãƒ¼ã‚¿ã‚µã‚¤ã‚ºãƒã‚§ãƒƒã‚¯
+                // ƒf[ƒ^ƒTƒCƒYƒ`ƒFƒbƒN
                 if (bytes.Length > MaxBufferSize)
                 {
-                    Console.WriteLine($"è­¦å‘Š: é€ä¿¡ãƒ‡ãƒ¼ã‚¿ãŒ{MaxBufferSize}ãƒã‚¤ãƒˆã‚’è¶…ãˆã¦ã„ã¾ã™ã€‚");
+                    Console.WriteLine($"Œx: ‘—Mƒf[ƒ^‚ª{MaxBufferSize}ƒoƒCƒg‚ğ’´‚¦‚Ä‚¢‚Ü‚·B");
                     return false;
                 }
 
@@ -128,24 +130,24 @@ namespace Common
             }
             catch (Exception ex)
             {
-                Console.WriteLine($"é€ä¿¡ã‚¨ãƒ©ãƒ¼: {ex.Message}");
+                Console.WriteLine($"‘—MƒGƒ‰[: {ex.Message}");
                 return false;
             }
         }
 
         /// <summary>
-        /// ã‚¨ãƒ©ãƒ¼ã‚¿ã‚¤ãƒ—ã«åŸºã¥ã„ã¦è©³ç´°ãƒ¡ãƒƒã‚»ãƒ¼ã‚¸ã‚’å–å¾—
+        /// ƒGƒ‰[ƒ^ƒCƒv‚ÉŠî‚Ã‚¢‚ÄÚ×ƒƒbƒZ[ƒW‚ğæ“¾
         /// </summary>
         public static string GetErrorDescription(ReceiveErrorType errorType)
         {
             return errorType switch
             {
-                ReceiveErrorType.DataTooLarge => "1024ãƒã‚¤ãƒˆã‚’è¶…ãˆã‚‹ãƒ‡ãƒ¼ã‚¿ãŒé€ã‚‰ã‚Œã¦ã„ã¾ã™",
-                ReceiveErrorType.MissingEOF => "<EOF>ãŒè¦‹ã¤ã‹ã‚Šã¾ã›ã‚“",
-                ReceiveErrorType.ConnectionClosed => "ã‚»ãƒƒã‚·ãƒ§ãƒ³ã‚’åˆ‡ã‚‰ã‚Œã¾ã—ãŸ",
-                ReceiveErrorType.DataCorruption => "ãƒ‡ãƒ¼ã‚¿ã«ç•°å¸¸ãŒã‚ã‚Šã¾ã™",
-                ReceiveErrorType.None => "ã‚¨ãƒ©ãƒ¼ãªã—",
-                _ => "æœªçŸ¥ã®ã‚¨ãƒ©ãƒ¼"
+                ReceiveErrorType.DataTooLarge => "1024ƒoƒCƒg‚ğ’´‚¦‚éƒf[ƒ^‚ª‘—‚ç‚ê‚Ä‚¢‚Ü‚·",
+                ReceiveErrorType.MissingEOF => "<EOF>‚ªŒ©‚Â‚©‚è‚Ü‚¹‚ñ",
+                ReceiveErrorType.ConnectionClosed => "ƒZƒbƒVƒ‡ƒ“‚ğØ‚ç‚ê‚Ü‚µ‚½",
+                ReceiveErrorType.DataCorruption => "ƒf[ƒ^‚ÉˆÙí‚ª‚ ‚è‚Ü‚·",
+                ReceiveErrorType.None => "ƒGƒ‰[‚È‚µ",
+                _ => "–¢’m‚ÌƒGƒ‰["
             };
         }
     }

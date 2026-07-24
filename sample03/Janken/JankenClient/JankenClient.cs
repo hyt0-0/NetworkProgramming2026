@@ -1,4 +1,4 @@
-ï»¿using System.Net;
+using System.Net;
 using System.Net.Sockets;
 using System.Text;
 using Common;
@@ -11,18 +11,28 @@ namespace JankenClient
     {
         public static void Main()
         {
-            Console.WriteLine("=== ã˜ã‚ƒã‚“ã‘ã‚“ã‚¯ãƒ©ã‚¤ã‚¢ãƒ³ãƒˆ ===");
-            Console.WriteLine("ã˜ã‚ƒã‚“ã‘ã‚“ã®æ‰‹ã‚’é¸ã‚“ã§ãã ã•ã„:");
-            Console.WriteLine("0: ã‚°ãƒ¼");
-            Console.WriteLine("1: ãƒ‘ãƒ¼");
-            Console.WriteLine("2: ãƒãƒ§ã‚­");
-            Console.Write("å…¥åŠ› > ");
+            Console.WriteLine("–¼‘O‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢");
+            string? name = Console.ReadLine();
+
+            if (string.IsNullOrEmpty(name))
+            {
+                Console.WriteLine("–¼‘O‚ª“ü—Í‚³‚ê‚Ä‚¢‚Ü‚¹‚ñB");
+                Console.ReadKey();
+                return;
+            }
+
+            Console.WriteLine("=== ‚¶‚á‚ñ‚¯‚ñƒNƒ‰ƒCƒAƒ“ƒg ===");
+            Console.WriteLine("‚¶‚á‚ñ‚¯‚ñ‚Ìè‚ğ‘I‚ñ‚Å‚­‚¾‚³‚¢:");
+            Console.WriteLine("0: ƒO[");
+            Console.WriteLine("1: ƒp[");
+            Console.WriteLine("2: ƒ`ƒ‡ƒL");
+            Console.Write("“ü—Í > ");
 
             string? input = Console.ReadLine();
 
             if (string.IsNullOrEmpty(input))
             {
-                Console.WriteLine("å…¥åŠ›ãŒã‚ã‚Šã¾ã›ã‚“ã€‚");
+                Console.WriteLine("“ü—Í‚ª‚ ‚è‚Ü‚¹‚ñB");
                 Console.ReadKey();
                 return;
             }
@@ -31,34 +41,34 @@ namespace JankenClient
 
             if (selectedHand == null)
             {
-                Console.WriteLine("ç„¡åŠ¹ãªå…¥åŠ›ã§ã™ã€‚0, 1, 2 ã®ã„ãšã‚Œã‹ã‚’å…¥åŠ›ã—ã¦ãã ã•ã„ã€‚");
+                Console.WriteLine("–³Œø‚È“ü—Í‚Å‚·B0, 1, 2 ‚Ì‚¢‚¸‚ê‚©‚ğ“ü—Í‚µ‚Ä‚­‚¾‚³‚¢B");
                 Console.ReadKey();
                 return;
             }
 
-            Console.WriteLine($"ã‚ãªãŸã®æ‰‹: {Janken.GetHandName(selectedHand.Value)}");
+            Console.WriteLine($"‚ ‚È‚½‚Ìè: {Janken.GetHandName(selectedHand.Value)}");
 
-            SocketClient(input);
+            SocketClient(input, name);
             Console.ReadKey();
         }
 
 
-        public static void SocketClient(string st)
+        public static void SocketClient(string st, string name)
         {
-            //IPã‚¢ãƒ‰ãƒ¬ã‚¹ã‚„ãƒãƒ¼ãƒˆã‚’è¨­å®š(è‡ªPCã€ãƒãƒ¼ãƒˆ:11000ï¼‰
+            //IPƒAƒhƒŒƒX‚âƒ|[ƒg‚ğİ’è(©PCAƒ|[ƒg:11000j
             string hostName = Dns.GetHostName();
             IPHostEntry ipHostInfo = Dns.GetHostEntry(hostName);
             IPAddress ipAddress = ipHostInfo.AddressList[1];
             IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
 
-            //å¤–éƒ¨ã‚’æŒ‡å®šã™ã‚‹å ´åˆ
+            //ŠO•”‚ğw’è‚·‚éê‡
             // IPAddress ipAddress = IPAddress.Parse("172.25.91.135");
             // IPEndPoint remoteEP = new IPEndPoint(ipAddress, 11000);
 
-            //ã‚½ã‚±ãƒƒãƒˆã‚’ä½œæˆ
+            //ƒ\ƒPƒbƒg‚ğì¬
             Socket socket = new Socket(ipAddress.AddressFamily, SocketType.Stream, ProtocolType.Tcp);
 
-            //æ¥ç¶šã™ã‚‹ã€‚å¤±æ•—ã™ã‚‹ã¨ã‚¨ãƒ©ãƒ¼ã§è½ã¡ã‚‹ã€‚
+            //Ú‘±‚·‚éB¸”s‚·‚é‚ÆƒGƒ‰[‚Å—‚¿‚éB
             try
             {
                 socket.Connect(remoteEP);
@@ -69,32 +79,32 @@ namespace JankenClient
                 return;
             }
 
-            // ProtocolHandlerã‚’ä½¿ã£ã¦ãƒ‡ãƒ¼ã‚¿ã‚’é€ä¿¡
-            Console.WriteLine($"\né€ä¿¡ãƒ‡ãƒ¼ã‚¿: {st}");
-            if (!ProtocolHandler.SendData(socket, st))
+            // ProtocolHandler‚ğg‚Á‚Äƒf[ƒ^‚ğ‘—M
+            Console.WriteLine($"\n‘—Mƒf[ƒ^: {st}");
+            if (!ProtocolHandler.SendData(socket, st, name))
             {
-                Console.WriteLine("é€ä¿¡ã«å¤±æ•—ã—ã¾ã—ãŸã€‚");
+                Console.WriteLine("‘—M‚É¸”s‚µ‚Ü‚µ‚½B");
                 socket.Close();
                 return;
             }
 
-            // ProtocolHandlerã‚’ä½¿ã£ã¦ãƒ‡ãƒ¼ã‚¿ã‚’å—ä¿¡
+            // ProtocolHandler‚ğg‚Á‚Äƒf[ƒ^‚ğóM
             var receiveResult = ProtocolHandler.ReceiveData(socket);
 
             if (!receiveResult.Success)
             {
-                // ã‚¨ãƒ©ãƒ¼ãŒç™ºç”Ÿã—ãŸå ´åˆ
-                Console.WriteLine($"ã‚¨ãƒ©ãƒ¼æ¤œçŸ¥: {receiveResult.ErrorMessage}");
-                Console.WriteLine($"ã‚¨ãƒ©ãƒ¼ã‚¿ã‚¤ãƒ—: {ProtocolHandler.GetErrorDescription(receiveResult.ErrorType)}");
+                // ƒGƒ‰[‚ª”­¶‚µ‚½ê‡
+                Console.WriteLine($"ƒGƒ‰[ŒŸ’m: {receiveResult.ErrorMessage}");
+                Console.WriteLine($"ƒGƒ‰[ƒ^ƒCƒv: {ProtocolHandler.GetErrorDescription(receiveResult.ErrorType)}");
             }
             else
             {
-                // æ­£å¸¸ã«å—ä¿¡ã—ãŸãƒ‡ãƒ¼ã‚¿ã‚’è¡¨ç¤º
-                Console.WriteLine($"\nå—ä¿¡ãƒ‡ãƒ¼ã‚¿:");
+                // ³í‚ÉóM‚µ‚½ƒf[ƒ^‚ğ•\¦
+                Console.WriteLine($"\nóMƒf[ƒ^:");
                 Console.WriteLine(receiveResult.Data);
             }
 
-            //ã‚½ã‚±ãƒƒãƒˆã‚’çµ‚äº†ã—ã¦ã„ã‚‹ã€‚
+            //ƒ\ƒPƒbƒg‚ğI—¹‚µ‚Ä‚¢‚éB
             socket.Shutdown(SocketShutdown.Both);
             socket.Close();
         }

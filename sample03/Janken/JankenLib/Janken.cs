@@ -1,64 +1,64 @@
-ï»¿namespace JankenLib;
+namespace JankenLib;
 
 /// <summary>
-/// ã˜ã‚ƒã‚“ã‘ã‚“ã®æ‰‹ã®ç¨®é¡
+/// ‚¶‚á‚ñ‚¯‚ñ‚Ìè‚Ìí—Ş
 /// </summary>
 public enum Hand
 {
-    Rock = 0,      // ã‚°ãƒ¼
-    Paper = 1,     // ãƒ‘ãƒ¼
-    Scissors = 2   // ãƒãƒ§ã‚­
+    Rock = 0,      // ƒO[
+    Paper = 1,     // ƒp[
+    Scissors = 2   // ƒ`ƒ‡ƒL
 }
 
 /// <summary>
-/// ã˜ã‚ƒã‚“ã‘ã‚“ã®çµæœ
+/// ‚¶‚á‚ñ‚¯‚ñ‚ÌŒ‹‰Ê
 /// </summary>
 public enum Result
 {
-    Win,    // å‹ã¡
-    Lose,   // è² ã‘
-    Draw    // å¼•ãåˆ†ã‘
+    Win,    // Ÿ‚¿
+    Lose,   // •‰‚¯
+    Draw    // ˆø‚«•ª‚¯
 }
 
 /// <summary>
-/// ã˜ã‚ƒã‚“ã‘ã‚“ã‚²ãƒ¼ãƒ ã®ãƒ­ã‚¸ãƒƒã‚¯ã‚¯ãƒ©ã‚¹
+/// ‚¶‚á‚ñ‚¯‚ñƒQ[ƒ€‚ÌƒƒWƒbƒNƒNƒ‰ƒX
 /// </summary>
 public class Janken
 {
     /// <summary>
-    /// æ‰‹ã®åå‰ã‚’å–å¾—
+    /// è‚Ì–¼‘O‚ğæ“¾
     /// </summary>
     public static string GetHandName(Hand hand)
     {
         return hand switch
         {
-            Hand.Rock => "ã‚°ãƒ¼",
-            Hand.Paper => "ãƒ‘ãƒ¼",
-            Hand.Scissors => "ãƒãƒ§ã‚­",
-            _ => "ä¸æ˜"
+            Hand.Rock => "ƒO[",
+            Hand.Paper => "ƒp[",
+            Hand.Scissors => "ƒ`ƒ‡ƒL",
+            _ => "•s–¾"
         };
     }
 
     /// <summary>
-    /// æ–‡å­—åˆ—ã‹ã‚‰æ‰‹ã‚’å–å¾—
+    /// •¶š—ñ‚©‚çè‚ğæ“¾
     /// </summary>
     public static Hand? ParseHand(string input)
     {
         return input.ToLower() switch
         {
-            "rock" or "ã‚°ãƒ¼" or "0" => Hand.Rock,
-            "paper" or "ãƒ‘ãƒ¼" or "1" => Hand.Paper,
-            "scissors" or "ãƒãƒ§ã‚­" or "2" => Hand.Scissors,
+            "rock" or "ƒO[" or "0" => Hand.Rock,
+            "paper" or "ƒp[" or "1" => Hand.Paper,
+            "scissors" or "ƒ`ƒ‡ƒL" or "2" => Hand.Scissors,
             _ => null
         };
     }
 
     /// <summary>
-    /// ã˜ã‚ƒã‚“ã‘ã‚“ã®å‹æ•—åˆ¤å®š
+    /// ‚¶‚á‚ñ‚¯‚ñ‚ÌŸ”s”»’è
     /// </summary>
-    /// <param name="player1">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼1ã®æ‰‹</param>
-    /// <param name="player2">ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼2ã®æ‰‹</param>
-    /// <returns>ãƒ—ãƒ¬ã‚¤ãƒ¤ãƒ¼1ã‹ã‚‰è¦‹ãŸçµæœ</returns>
+    /// <param name="player1">ƒvƒŒƒCƒ„[1‚Ìè</param>
+    /// <param name="player2">ƒvƒŒƒCƒ„[2‚Ìè</param>
+    /// <returns>ƒvƒŒƒCƒ„[1‚©‚çŒ©‚½Œ‹‰Ê</returns>
     public static Result Judge(Hand player1, Hand player2)
     {
         if (player1 == player2)
@@ -76,21 +76,21 @@ public class Janken
     }
 
     /// <summary>
-    /// çµæœã®æ–‡å­—åˆ—è¡¨ç¾ã‚’å–å¾—
+    /// Œ‹‰Ê‚Ì•¶š—ñ•\Œ»‚ğæ“¾
     /// </summary>
     public static string GetResultMessage(Result result)
     {
         return result switch
         {
-            Result.Win => "å‹ã¡",
-            Result.Lose => "è² ã‘",
-            Result.Draw => "å¼•ãåˆ†ã‘",
-            _ => "ä¸æ˜"
+            Result.Win => "‚ ‚È‚½‚ÌŸ‚¿",
+            Result.Lose => "‚ ‚È‚½‚Ì•‰‚¯",
+            Result.Draw => "‚ ‚¢‚±",
+            _ => "•s–¾"
         };
     }
 
     /// <summary>
-    /// ãƒ©ãƒ³ãƒ€ãƒ ãªæ‰‹ã‚’ç”Ÿæˆ
+    /// ƒ‰ƒ“ƒ_ƒ€‚Èè‚ğ¶¬
     /// </summary>
     public static Hand GetRandomHand()
     {
