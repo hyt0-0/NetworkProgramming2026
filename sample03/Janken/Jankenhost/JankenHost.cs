@@ -148,6 +148,9 @@ namespace Jankenhost
             handler.Shutdown(SocketShutdown.Both);
             handler.Close();
             listener.Close();
+
+            Console.WriteLine("\n‰½‚©ƒL[‚ğ‰Ÿ‚·‚ÆI—¹‚µ‚Ü‚·...");
+            Console.ReadKey();
         }
 
     }

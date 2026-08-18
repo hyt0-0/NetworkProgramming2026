@@ -104,7 +104,7 @@ namespace JankenClient
                 Console.WriteLine(receiveResult.Data);
             }
 
-            //ソケットを終了している。
+            //ソケットを終了する
             socket.Shutdown(SocketShutdown.Both);
             socket.Close();
         }
